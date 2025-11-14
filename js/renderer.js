@@ -180,6 +180,38 @@ class Renderer {
         this.ctx.fill();
     }
 
+    drawMenuFish(x, y) {
+        this.ctx.save();
+        this.ctx.translate(x, y);
+
+        // Scale up for menu
+        const scale = 3;
+        this.ctx.scale(scale, scale);
+
+        // Draw a simple pixel art fish
+        this.ctx.fillStyle = Utils.COLORS.ORANGE;
+
+        // Body
+        this.ctx.fillRect(-8, -8, 16, 16);
+
+        // Tail
+        this.ctx.fillRect(-12, -4, 4, 8);
+
+        // Fins
+        this.ctx.fillRect(4, -10, 4, 4);
+        this.ctx.fillRect(4, 6, 4, 4);
+
+        // Eye white
+        this.ctx.fillStyle = Utils.COLORS.WHITE;
+        this.ctx.fillRect(2, -3, 4, 4);
+
+        // Pupil
+        this.ctx.fillStyle = Utils.COLORS.BLACK;
+        this.ctx.fillRect(4, -1, 2, 2);
+
+        this.ctx.restore();
+    }
+
     drawLevelComplete(stars, collected, total) {
         // Overlay
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -263,9 +295,8 @@ class Renderer {
 
         // Fish animation
         const fishX = this.width / 2 + Math.sin(Date.now() * 0.003) * 50;
-        this.ctx.fillStyle = Utils.COLORS.ORANGE;
-        this.ctx.font = '64px "Courier New"';
-        this.ctx.fillText('🐟', fishX, 180);
+        const fishY = 180;
+        this.drawMenuFish(fishX, fishY);
 
         // Options
         this.ctx.font = '20px "Courier New"';

@@ -1,22 +1,43 @@
 // Main entry point
 
 window.addEventListener('load', () => {
-    // Get canvas
-    const canvas = document.getElementById('gameCanvas');
-    const loadingScreen = document.getElementById('loadingScreen');
+    try {
+        // Get canvas
+        const canvas = document.getElementById('gameCanvas');
+        const loadingScreen = document.getElementById('loadingScreen');
 
-    // Initialize audio
-    Audio.init();
+        console.log('Canvas:', canvas);
+        console.log('Loading screen:', loadingScreen);
 
-    // Create game
-    const game = new Game(canvas);
+        // Initialize audio
+        Audio.init();
+        console.log('Audio initialized');
 
-    // Hide loading screen
-    setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-        game.showMenu();
-        game.run();
-    }, 500);
+        // Create game
+        const game = new Game(canvas);
+        console.log('Game created');
+
+        // Hide loading screen
+        setTimeout(() => {
+            try {
+                console.log('Hiding loading screen and starting game...');
+                loadingScreen.classList.add('hidden');
+                game.showMenu();
+                console.log('Menu shown');
+                game.run();
+                console.log('Game running');
+            } catch (error) {
+                console.error('Error starting game:', error);
+                loadingScreen.innerHTML = '<div style="color: red;">Error: ' + error.message + '</div>';
+            }
+        }, 500);
+    } catch (error) {
+        console.error('Error initializing game:', error);
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.innerHTML = '<div style="color: red;">Error: ' + error.message + '</div>';
+        }
+    }
 
     // Handle window resize (optional)
     window.addEventListener('resize', () => {
