@@ -18,6 +18,12 @@ window.addEventListener('load', () => {
         Audio.init();
         console.log('Audio initialized');
 
+        // Test canvas rendering
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(0, 0, 100, 100);
+        console.log('Test rectangle drawn');
+
         // Create game
         const game = new Game(canvas);
         console.log('Game created');
@@ -26,14 +32,26 @@ window.addEventListener('load', () => {
         setTimeout(() => {
             try {
                 console.log('Hiding loading screen and starting game...');
+                console.log('Loading screen classes before:', loadingScreen.className);
                 loadingScreen.classList.add('hidden');
+                console.log('Loading screen classes after:', loadingScreen.className);
+                console.log('Loading screen display:', window.getComputedStyle(loadingScreen).display);
+
                 game.showMenu();
-                console.log('Menu shown');
+                console.log('Menu shown, game state:', game.state);
+
                 game.run();
                 console.log('Game running');
+
+                // Force a manual first render
+                setTimeout(() => {
+                    console.log('Manual render check, state:', game.state);
+                    game.draw();
+                }, 100);
             } catch (error) {
                 console.error('Error starting game:', error);
-                loadingScreen.innerHTML = '<div style="color: red;">Error: ' + error.message + '</div>';
+                console.error('Stack:', error.stack);
+                loadingScreen.innerHTML = '<div style="color: red;">Error: ' + error.message + '<br><pre>' + error.stack + '</pre></div>';
             }
         }, 500);
     } catch (error) {
