@@ -1,13 +1,18 @@
 // Main entry point
 
 window.addEventListener('load', () => {
-    try {
-        // Get canvas
-        const canvas = document.getElementById('gameCanvas');
-        const loadingScreen = document.getElementById('loadingScreen');
+    // Get canvas and loading screen
+    const canvas = document.getElementById('gameCanvas');
+    const loadingScreen = document.getElementById('loadingScreen');
 
+    try {
         console.log('Canvas:', canvas);
         console.log('Loading screen:', loadingScreen);
+
+        // Prevent context menu on canvas
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
 
         // Initialize audio
         Audio.init();
@@ -33,7 +38,6 @@ window.addEventListener('load', () => {
         }, 500);
     } catch (error) {
         console.error('Error initializing game:', error);
-        const loadingScreen = document.getElementById('loadingScreen');
         if (loadingScreen) {
             loadingScreen.innerHTML = '<div style="color: red;">Error: ' + error.message + '</div>';
         }
@@ -50,11 +54,6 @@ window.addEventListener('load', () => {
             window.DEBUG = !window.DEBUG;
             console.log('Debug mode:', window.DEBUG);
         }
-    });
-
-    // Prevent context menu on canvas
-    canvas.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
     });
 
     console.log('%cFish Putt Adventure', 'font-size: 24px; color: #00ffff;');
