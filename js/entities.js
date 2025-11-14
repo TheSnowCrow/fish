@@ -31,6 +31,7 @@ class Fish {
         this.body.vel.y = 0;
         this.body.acc.x = 0;
         this.body.acc.y = 0;
+        this.body.enableGravity = false; // No gravity when at rest
         this.state = 'idle';
         this.hasBoost = true;
     }
@@ -40,6 +41,7 @@ class Fish {
         const vy = Math.sin(angle) * power;
         this.body.vel.x = vx;
         this.body.vel.y = vy;
+        this.body.enableGravity = true; // Enable gravity during flight
         this.state = 'flying';
         this.angle = angle;
         Audio.playLaunch();
@@ -76,6 +78,9 @@ class Fish {
             // Check if stopped
             if (this.body.isStopped()) {
                 this.state = 'stopped';
+                this.body.enableGravity = false; // Disable gravity when stopped
+                this.body.vel.x = 0; // Fully stop movement
+                this.body.vel.y = 0;
             }
         }
 

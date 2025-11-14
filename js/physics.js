@@ -70,9 +70,10 @@ class PhysicsBody {
         this.radius = radius;
         this.mass = 1;
         this.drag = 0.99;
-        this.gravity = 0.3;
+        this.gravity = 0.15; // Reduced gravity for easier control
         this.onGround = false;
         this.currentSurface = SurfaceType.COUNTERTOP;
+        this.enableGravity = false; // Only apply gravity when enabled
     }
 
     applyForce(force) {
@@ -81,8 +82,10 @@ class PhysicsBody {
     }
 
     update(dt) {
-        // Apply gravity
-        this.vel.y += this.gravity * dt * 60;
+        // Apply gravity only if enabled
+        if (this.enableGravity) {
+            this.vel.y += this.gravity * dt * 60;
+        }
 
         // Apply acceleration
         this.vel.x += this.acc.x * dt * 60;
