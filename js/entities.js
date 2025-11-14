@@ -62,24 +62,54 @@ class Fish {
         return false;
     }
 
-    update(dt, particles) {
-        const wasMoving = this.body.getSpeed() > 0.5;
-        this.body.update(dt);
-
-        // Update angle based on velocity
+    update(dt, particles, worldBounds = { width: 800, height: 600 }) {
+        // Simple friction-based movement (no gravity, no complex physics)
         if (this.state === 'flying') {
-            this.angle = Math.atan2(this.body.vel.y, this.body.vel.x);
+            // Apply strong friction to slow down
+            const friction = 0.96;
+            this.body.vel.x *= friction;
+            this.body.vel.y *= friction;
+
+            // Update position
+            this.body.pos.x += this.body.vel.x * dt * 60;
+            this.body.pos.y += this.body.vel.y * dt * 60;
+
+            // Simple wall bouncing
+            if (this.body.pos.x - this.body.radius < 0) {
+                this.body.pos.x = this.body.radius;
+                this.body.vel.x *= -0.5; // Bounce with energy loss
+                Audio.playBounce(0.5);
+            }
+            if (this.body.pos.x + this.body.radius > worldBounds.width) {
+                this.body.pos.x = worldBounds.width - this.body.radius;
+                this.body.vel.x *= -0.5;
+                Audio.playBounce(0.5);
+            }
+            if (this.body.pos.y - this.body.radius < 0) {
+                this.body.pos.y = this.body.radius;
+                this.body.vel.y *= -0.5;
+                Audio.playBounce(0.5);
+            }
+            if (this.body.pos.y + this.body.radius > worldBounds.height) {
+                this.body.pos.y = worldBounds.height - this.body.radius;
+                this.body.vel.y *= -0.5;
+                Audio.playBounce(0.5);
+            }
+
+            // Update angle based on velocity
+            if (this.body.getSpeed() > 0.5) {
+                this.angle = Math.atan2(this.body.vel.y, this.body.vel.x);
+            }
 
             // Trail particles
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.3 && this.body.getSpeed() > 1) {
                 particles.trail(this.body.pos.x, this.body.pos.y, this.trailColor);
             }
 
-            // Check if stopped
-            if (this.body.isStopped()) {
+            // Check if stopped (much more aggressive stopping)
+            if (this.body.getSpeed() < 0.5) {
                 this.state = 'stopped';
-                this.body.enableGravity = false; // Disable gravity when stopped
-                this.body.vel.x = 0; // Fully stop movement
+                this.body.vel.x = 0;
                 this.body.vel.y = 0;
             }
         }

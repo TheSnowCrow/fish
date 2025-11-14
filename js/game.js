@@ -216,9 +216,16 @@ class Game {
         }
 
         // Update fish
-        this.fish.update(dt, this.particles);
+        this.fish.update(dt, this.particles, { width: this.canvas.width, height: this.canvas.height });
 
-        // Update physics
+        // Check fish collision with walls
+        if (this.fish.state === 'flying') {
+            this.level.walls.forEach(wallData => {
+                this.checkFishWallCollision(wallData);
+            });
+        }
+
+        // Update physics (for obstacles only now)
         this.physics.update(dt);
 
         // Update obstacles
@@ -313,6 +320,41 @@ class Game {
         } else {
             // Game complete!
             this.showMenu();
+        }
+    }
+
+    checkFishWallCollision(wall) {
+        const fish = this.fish.body;
+
+        // Find closest point on rectangle to circle
+        const closestX = Utils.clamp(fish.pos.x, wall.x, wall.x + wall.width);
+        const closestY = Utils.clamp(fish.pos.y, wall.y, wall.y + wall.height);
+
+        const dx = fish.pos.x - closestX;
+        const dy = fish.pos.y - closestY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < fish.radius) {
+            // Collision detected - push fish out
+            if (distance > 0) {
+                const nx = dx / distance;
+                const ny = dy / distance;
+
+                // Push fish outside the wall
+                const overlap = fish.radius - distance;
+                fish.pos.x += nx * overlap;
+                fish.pos.y += ny * overlap;
+
+                // Bounce with energy loss
+                const dotProduct = fish.vel.x * nx + fish.vel.y * ny;
+                fish.vel.x -= 2 * dotProduct * nx;
+                fish.vel.y -= 2 * dotProduct * ny;
+                fish.vel.x *= 0.5; // Energy loss on bounce
+                fish.vel.y *= 0.5;
+
+                Audio.playBounce(0.7);
+                this.particles.splash(fish.pos.x, fish.pos.y);
+            }
         }
     }
 
